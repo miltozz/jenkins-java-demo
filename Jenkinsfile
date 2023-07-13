@@ -79,18 +79,6 @@ pipeline{
                 }
             }
         }
-        
-        // stage("build and push Nexus image"){           
-        //     steps{
-        //         echo "stage : build and push nexus image"
-        //         script{
-        //             echo "sb build and push nexus image"
-        //             //gv.buildApp()
-        //             //buildImage 'miltosdev/my-private-repo:jda-3.0'                   
-        //             //gv.buildImageForNexus "$nexusRepoImageName"               
-        //         }
-        //     }
-        // }
 
         stage("Build Push docker image") {
             steps {
@@ -168,6 +156,7 @@ pipeline{
         7. scp server-cmds.sh and docker-compose.yaml to the EC2 instance
         8. ssh to EC2 instance and execute server-cmds.sh
         9. server-cmds.sh logins to docker and runs docker-compose
+
         */
         stage('deploy') {
             environment{
@@ -191,6 +180,19 @@ pipeline{
                 }
             }
         }
+
+
+        // stage("build and push Nexus image"){           
+        //     steps{
+        //         echo "stage : build and push nexus image"
+        //         script{
+        //             echo "sb build and push nexus image"
+        //             //gv.buildApp()
+        //             //buildImage 'miltosdev/my-private-repo:jda-3.0'                   
+        //             //gv.buildImageForNexus "$nexusRepoImageName"               
+        //         }
+        //     }
+        // }
 
     }
 }
