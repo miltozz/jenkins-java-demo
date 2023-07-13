@@ -1,30 +1,18 @@
-def buildJar() {
-    echo "gv building the app jar..."
-    sh "mvn clean package"
-} 
-
-def deployApp() {
-    echo 'gv deploying the app...'
-} 
-
-def buildImageDocker(String imageName) {
-    echo "building the docker image..."
-    withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-        sh "docker build -t $imageName ."
-        sh "echo $PASS | docker login -u $USER --password-stdin"
-        sh 'docker push miltosdev/my-private-repo:jda-1.0.0'
-    }
-}  
-
-def buildImageNexus(String imageName) {
-    echo "building the nexus image..."
-    withCredentials([usernamePassword(credentialsId: 'nx-cont-docker-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-        sh "docker build -t $imageName ."
-        sh "echo $PASS | docker login 164.92.250.242:8083 -u $USER --password-stdin"
-        sh "docker push $imageName"
-    }
+def externalPre() {
+    echo "External pre echo from script.groovy.. So nice!"
+    echo "Version information printed by script.groovy: ${params.VERSION}"
 }
 
+def checkPreExecution(){
+    return params.doExecutePre
+}
 
+def testStage() {
+    echo 'testing by testStage()....'
+    echo "Echo SOME_STRING: ${SOME_STRING}"
+    // !!!MULTIBRANCH ONLY
+    //echo "Testing branch $BRANCH_NAME"
+    echo "The value of environmental var, SOME_VAR is: ${SOME_VAR}"    
+}
 
 return this
