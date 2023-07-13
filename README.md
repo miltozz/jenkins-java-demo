@@ -1,4 +1,3 @@
-# Simple Java app for tests
+# jenkins-jobs-simple
 
-- Simple java app to use for tests and test maven
-- Build jar with `maven clean package`
+A simple jenkins job for testing pipeline features.

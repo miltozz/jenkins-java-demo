@@ -1,2 +1,3 @@
-# npm --version
-# docker --version
+npm --version
+echo "Hello freestyle!!"
+
