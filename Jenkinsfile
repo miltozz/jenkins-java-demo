@@ -67,7 +67,7 @@ pipeline{
                 echo "stage: build jar"
                 script {
                     echo "sb build jar"
-                    //buildJar()
+                    buildJarClean.groovy()
                 }
             }
         }
