@@ -26,12 +26,12 @@ variable "depl_env_prefix" {
 variable "my_ip" {
   description = "My IP for SG SSH ingress"
   type        = string
-  default     = "11.111.11.195/32"      
+  default     = "11.111.11.111/32"      
 }
 variable "jenkins_ip" {
   description = "Jenkins IP for SG SSH ingress"
   type        = string
-  default     = "11.111.111.202/32"      
+  default     = "11.111.111.111/32"      
 }
 variable "instance_type" {
   description = "EC2 instance type"
