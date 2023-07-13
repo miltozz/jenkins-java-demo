@@ -86,13 +86,13 @@ pipeline{
 
     post{
         always{
-            echo 'Always print this!'
+            echo 'Post: Always print this!'
         }
         failure{
-            echo 'Build failed'
+            echo 'Post: Build failed'
         }
         success{
-            echo 'Build success'
+            echo 'Post: Build success'
         }
     }
 }
