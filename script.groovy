@@ -1,18 +1,29 @@
-def externalPre() {
-    echo "External pre echo from script.groovy.. So nice!"
-    echo "Version information printed by script.groovy: ${params.VERSION}"
-}
+/* def buildJar() {
+    echo "building the application..."
+    sh 'mvn clean package'
+} 
 
-def checkPreExecution(){
-    return params.doExecutePre
-}
+def buildImage() {
+    echo "building the docker image..."
+    withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+        sh 'docker build -t miltosdev/my-private-repo:jda-2.0 .'
+        sh "echo $PASS | docker login -u $USER --password-stdin"
+        sh 'docker push miltosdev/my-private-repo:jda-2.0'
+    }
+}  
 
-def testStage() {
-    echo 'testing by testStage()....'
-    echo "Echo SOME_STRING: ${SOME_STRING}"
-    // !!!Only in MULTIBRANCH pipelines
-    //echo "Testing branch $BRANCH_NAME"
-    echo "The value of environmental var, SOME_VAR is: ${SOME_VAR}"    
-}
+def buildImageForNexus(String imageName) {
+    echo "building the nexus image..."
+    withCredentials([usernamePassword(credentialsId: 'nx-cont-docker-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+        sh "docker build -t $imageName ."
+        sh "echo $PASS | docker login 111.11.111.111:8083 -u $USER --password-stdin"
+        sh "docker push $imageName"
+    }
+} */
+
+
+def deployApp() {
+    echo 'script.groovy deploying the application...'
+} 
 
 return this
