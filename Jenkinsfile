@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
 /*
+
 1. Global scope
 Globally(Jenkins) scoped shared library, with name as defined in Jenkins GUI:
 Manage Jenkins->System Configuration->Configure System->Global Pipelines
@@ -17,6 +18,7 @@ shared library version per Jenkinsfile by specifying
 tag, branch name or commit hash
 
 @Library('global-jenkins-shared-library@main')
+
 */
 
 
@@ -35,13 +37,13 @@ library identifier: 'JenkinsSharedLib@main', retriever: modernSCM(
 def gv
 
 /* 
-GROOVY elvis / JAVA ternary operator
+GROOVY elvis / JAVA TERNARY
 def varName = System.getenv("BUILD_NUMBER") ? : "0"
  means if varName is null then varName = 0
  */
 
 //SPECIFY IMAGE NAME
-def dockerRepoImageName = 'miltosdev/my-private-repo:jda-class-1.0.0'
+def dockerRepoImageName = 'miltosdev/my-private-repo:jda-v1.0.0'
 def nexusRepoImageName = '111.11.111.111:8083/nx-java-demo-app:1.5.0-nx'
 
 
@@ -50,6 +52,10 @@ pipeline{
 
     tools{
         maven 'maven386'
+    }
+
+    environment{
+        IMAGE_NAME = 'miltosdev/my-private-repo:jda-v1.0.0'
     }
 
     stages{
@@ -67,7 +73,7 @@ pipeline{
                 echo "stage: build jar"
                 script {
                     echo "sb build jar"
-                    buildJarClean()
+                    //buildJar()
                 }
             }
         }
@@ -101,9 +107,9 @@ pipeline{
 
                     // Example 3: 
                     // Extract logic and Groovy classes
-                    buildImage "$dockerRepoImageName"
-                    dockerLogin()
-                    dockerPush "$dockerRepoImageName"
+                    // buildImage "$dockerRepoImageName"
+                    // dockerLogin()
+                    // dockerPush "$dockerRepoImageName"
                 } 
             }
         }
@@ -117,5 +123,28 @@ pipeline{
 
             }
         }
+
+        stage('deploy ssh-agent') {
+            steps {
+                script {
+                   echo 'using ssh-agent plugin...'
+                   //enclose in `withCredentials` to pass docker user and password as parameters in shellCmd, for docker login in remote target
+                   
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME} $USER $PASS"
+                            
+                        def ec2Instance = "ec2-user@11.11.111.14"
+                    
+                        sshagent(['paris-test-key']) {
+                            sh "scp -o StrictHostKeyChecking=no server-cmds.sh ${ec2Instance}:/home/ec2-user"
+                            sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2Instance}:/home/ec2-user"
+                            sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
+                            sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} pwd"
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
