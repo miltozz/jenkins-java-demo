@@ -8,6 +8,6 @@
 - Check Jenkinsfile for comments and notes
 
 ## Repos
-- [This](https://github.com/miltozz/jenkins-java-demo/jenkins-shared-lib-branch) repo is using/calls the library in the Jenkinsfile
+- [This](https://github.com/miltozz/jenkins-java-demo/tree/jenkins-shared-lib-branch) repo is using/calls the library in the Jenkinsfile
 - The actual shared library implementation [repo](https://github.com/miltozz/jenkins-shared-library) 
 
