@@ -1,6 +1,6 @@
 # jenkins-java-demo
 
-## jenkins-java-demo-pipeline/main
+## Full project name: jenkins-java-demo/main
 
 [REPO](https://github.com/miltozz/jenkins-java-demo/)
 

@@ -12,7 +12,7 @@ def buildImageDocker(String imageName) {
     withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
         sh "docker build -t $imageName ."
         sh "echo $PASS | docker login -u $USER --password-stdin"
-        sh 'docker push miltosdev/my-private-repo:jma-1.0.0'
+        sh 'docker push miltosdev/my-private-repo:jda-1.0.0'
     }
 }  
 

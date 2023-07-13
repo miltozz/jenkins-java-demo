@@ -4,8 +4,8 @@
 def gv
 
 // repo and image names
-def dockerRepoImageName = 'miltosdev/my-private-repo:jma-1.0.0'
-def nexusRepoImageName = '111.11.111.111:8083/nx-java-mv-app:1.0.0-nx'
+def dockerRepoImageName = 'miltosdev/my-private-repo:jda-1.0.0'
+def nexusRepoImageName = '111.11.111.111:8083/nx-java-demo-app:1.0.0-nx'
 
 pipeline{
     agent any
