@@ -1,7 +1,6 @@
 #!/usr/bin/env groovy
 
 /*
-
 1. Global scope
 Globally(Jenkins) scoped shared library, with name as defined in Jenkins GUI:
 Manage Jenkins->System Configuration->Configure System->Global Pipelines
@@ -18,7 +17,6 @@ shared library version per Jenkinsfile by specifying
 tag, branch name or commit hash
 
 @Library('global-jenkins-shared-library@main')
-
 */
 
 
