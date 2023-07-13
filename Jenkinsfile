@@ -67,7 +67,7 @@ pipeline{
                 echo "stage: build jar"
                 script {
                     echo "sb build jar"
-                    buildJarClean()
+                    //buildJarClean()
                 }
             }
         }
@@ -101,9 +101,9 @@ pipeline{
 
                     // Example 3: 
                     // Extract logic and Groovy classes
-                    buildImage "$dockerRepoImageName"
-                    dockerLogin()
-                    dockerPush "$dockerRepoImageName"
+                    // buildImage "$dockerRepoImageName"
+                    // dockerLogin()
+                    // dockerPush "$dockerRepoImageName"
                 } 
             }
         }
