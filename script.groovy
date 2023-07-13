@@ -1,6 +1,6 @@
 /* def buildJar() {
     echo "building the application..."
-    sh 'mvn clean package'
+    sh 'mvn package'
 } 
 
 def buildImage() {
@@ -16,7 +16,7 @@ def buildImageForNexus(String imageName) {
     echo "building the nexus image..."
     withCredentials([usernamePassword(credentialsId: 'nx-cont-docker-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
         sh "docker build -t $imageName ."
-        sh "echo $PASS | docker login 111.11.111.111:8083 -u $USER --password-stdin"
+        sh "echo $PASS | docker login 111.11.111.242:8083 -u $USER --password-stdin"
         sh "docker push $imageName"
     }
 } */
