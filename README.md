@@ -1,10 +1,13 @@
-# Jenkinsfile tutorial & tips
-
-## Jenkins jobs
-- multibranch: jenkins-java-demo/jenkinsfile-tutorial
-- pipeline: my-pipeline-jenkinsfile-tutorial
+# Jenkins pipeline
+- my-pipeline-buildJar-pushDocker
 
 ## Description
-- A project to demonstrate various Jenkins pipeline methods and functionalities
-- Also demonstrate some Jenkinsfile syntax tips
-- See the Jenkisfile for comments
+
+- Java Maven App
+- Build jar with maven
+- Build docker image
+- Login to docker
+- Push to docker
+
+## Note
+Jenkinsfile demonstrates various syntax options

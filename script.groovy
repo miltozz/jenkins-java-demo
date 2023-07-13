@@ -1,18 +1,21 @@
-def externalPre() {
-    echo "External pre echo from script.groovy.. So nice!"
-    echo "Version information printed by script.groovy: ${params.VERSION}"
-}
+def buildJar() {
+    echo "building the application..."
+    sh 'mvn package'
+} 
 
-def checkPreExecution(){
-    return params.doExecutePre
-}
+def dockerImageBP() {
+    echo "building the docker image..."
+    withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+        sh 'docker build -t miltosdev/my-private-repo:jda-v1.0.0 .'
+        sh 'echo Docker Login..'
+        sh "echo $PASS | docker login -u $USER --password-stdin" //plus repo host when not DockerHub
+        sh 'echo Docker push image...'
+        sh 'docker push miltosdev/my-private-repo:jda-v1.0.0'
+    }
+} 
 
-def testStage() {
-    echo 'testing by testStage()....'
-    echo "Echo SOME_STRING: ${SOME_STRING}"
-    // !!!MULTIBRANCH ONLY
-    //echo "Testing branch $BRANCH_NAME"
-    echo "The value of environmental var, SOME_VAR is: ${SOME_VAR}"    
-}
+def deployApp() {
+    echo 'deploying the application...'
+} 
 
 return this

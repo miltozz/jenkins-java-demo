@@ -2,8 +2,7 @@ FROM openjdk:8-jre-alpine
 
 EXPOSE 8080
 
-COPY ./target/java-maven-app-1.1.0.jar /usr/app/
+COPY ./target/jda-1.0.0.jar /usr/app/
 WORKDIR /usr/app
 
-ENTRYPOINT ["java", "-jar", "java-maven-app-1.1.0.jar"]
-
+ENTRYPOINT ["java", "-jar", "jda-1.0.0.jar"]
