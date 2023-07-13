@@ -1,3 +1,3 @@
 npm --version
-echo "Hello!"
-echo "Freestyle-build!!"
+echo "Hello World!"
+echo "It's the freestyle-build!!"

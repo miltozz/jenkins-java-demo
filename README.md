@@ -6,5 +6,5 @@
 
 ## Description
 - A project to demonstrate various Jenkins pipeline methods and functionalities
-- Also demonstrate some Jenkinsfile syntax tips
-- See the Jenkisfile for comments
+- Demonstrate some Jenkinsfile syntax tips
+- See the Jenkisfile for more comments
