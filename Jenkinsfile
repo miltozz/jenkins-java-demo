@@ -95,7 +95,7 @@ pipeline{
             when {
                 expression{
                     //BRANCH_NAME only works in MULTIBRANCH pipelines
-                    //env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'jenkinsfile-tutorial' && MYBOOL == true
+                    //env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'jenkinsfile-tutorial' && MYBOOL == true
                     MY_BOOL == true
                 }
             }            
