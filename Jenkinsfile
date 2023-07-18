@@ -15,7 +15,7 @@ pipeline{
     }
 
     environment{
-        IMAGE_NAME = "5.0.11-build-19"
+        //IMAGE_NAME = "5.0.11-build-19"
     }
 
     stages{
