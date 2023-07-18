@@ -15,17 +15,17 @@ pipeline{
             steps{
                 script{
                     echo "testing...."
-                    echo "Testing branch $BRANCH_NAME"
+                    //echo "Testing branch $BRANCH_NAME"
                     echo "testing automatic trigger/webhooks/integrations"
                 }
             }
         }        
         stage("build"){
-            when {
-                expression{
-                    BRANCH_NAME == 'main'
-                }
-            }            
+            // when {
+            //     expression{
+            //         BRANCH_NAME == 'main'
+            //     }
+            // }            
             steps{
                 script{
                     echo "building..."
@@ -35,11 +35,11 @@ pipeline{
             }
         }
         stage("deploy"){
-            when {
-                expression{
-                    BRANCH_NAME == 'main'
-                }
-            }            
+            // when {
+            //     expression{
+            //         BRANCH_NAME == 'main'
+            //     }
+            // }            
             steps{
                 echo "deploying..."
             }
