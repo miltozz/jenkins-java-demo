@@ -42,6 +42,7 @@ variable "instance_type" {
 # variable "public_key_location" {
 #   description = "EC2 instance type"
 #   type        = string
+#   #windows path
 #   default     = "C:\\Users\\MLT\\.ssh\\id_ed25519.pub"     
 # }
 

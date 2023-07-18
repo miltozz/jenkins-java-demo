@@ -175,7 +175,7 @@ resource "aws_instance" "myapp-server" {
 
 
   /*
-  Note 1: user_data: 
+  Note 1: 
   - user_data must be available by the cloud provider.
   - Terraform does not wait for execution or gives feeedback about success
   or failure on these scripts. It just passes data on the cloud provider. 
@@ -183,7 +183,7 @@ resource "aws_instance" "myapp-server" {
 
   Note 2: user_data touches on configuration management by running shell scripts.
   - Terraform is better suited for infra provisioning. 
-  - Ansible, Puppet or Chef are better choices for configuring stuff. 
+  - Ansible, Puppet or Chef are better for configuration management. 
 */
   user_data = file("entry-script.sh") //if no file is used, (Here document) <<EOF syntax needed
 
