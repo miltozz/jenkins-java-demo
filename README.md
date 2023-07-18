@@ -2,14 +2,11 @@
 Trigger pipelines based on repo events(e.g push)
 
 # Github
-
-## Testing github webhooks for Jenkins - push trigger
 - On push to the repo a Jenkins pipeline is triggered
 - [Github Docs: Webhooks ](https://docs.github.com/en/webhooks-and-events/webhooks/about-webhooks-for-repositories)
 
 
 ## Jenkins - System - GitHub Server
-
 ### Plugin help notes
 In this mode, Jenkins will add/remove hook URLs to GitHub based on the project configuration. Jenkins has a single post-commit hook URL for all the repositories, and this URL will be added to all the GitHub repositories Jenkins is interested in. You should provide credentials with scope admin:repo_hook for every repository which should be managed by Jenkins. It needs to read the current list of hooks, create new hooks and remove old hooks.
 
@@ -43,8 +40,6 @@ The Hook URL is http://13.38.217.197:8080/github-webhook/ , and it needs to be a
 ---
 
 # Gitlab
-
-## Integration for Jenkins - push trigger
 - On push to the repo a Jenkins pipeline is triggered
 - [Gitlab Jenkins Integration](https://docs.github.com/en/webhooks-and-events/webhooks/about-webhooks-for-repositories)
 
