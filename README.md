@@ -39,7 +39,7 @@ The Hook URL is http://13.38.217.197:8080/github-webhook/ , and it needs to be a
 
 ---
 
-# Gitlab
+# Gitlab 
 - On push to the repo a Jenkins pipeline is triggered
 - [Gitlab Jenkins Integration](https://docs.github.com/en/webhooks-and-events/webhooks/about-webhooks-for-repositories)
 
