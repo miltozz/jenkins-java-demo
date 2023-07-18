@@ -1,12 +1,10 @@
 //in Dockerfile jar matching with wild card *
 //another way is to pass the version number as a parameter and add it to jar name
 
-//we should also build the jar with mvn clean package, so the older jars are deleted.
+//we should build the jar with mvn clean package, so the older jars are deleted.
 //Dockerfile needs this because it builds the image with a * wildcard in the jar name. 
 
 def gv
-def EC2_PUBLIC_IP = '11.11.11.131'
-def EC2_USER = 'ec2-user'
 def DOCKER_REPO = 'miltosdev/my-private-repo'
 
 pipeline{
@@ -52,27 +50,44 @@ pipeline{
         stage("buildApp"){           
             steps{
                 script{
-                    echo "building..."
+                    echo "building jar..."
                     //pom.xml is updated so we build the jar with updated version
                     gv.buildApp()
                 }         
             }
         }        
-
-        stage ('buildImage push to dockerhub'){
+        stage ('build image & push to dockerhub'){
             steps{
                 script{
                     echo "building the docker image..."
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "docker build -t miltosdev/my-private-repo:${IMAGE_NAME} ."
+                        sh "docker build -t ${DOCKER_REPO}:${IMAGE_NAME} ."
                         sh "echo $PASS | docker login -u $USER --password-stdin"
-                        sh "docker push miltosdev/my-private-repo:${IMAGE_NAME}"
+                        sh "docker push ${DOCKER_REPO}:${IMAGE_NAME}"
+                    }
+                }
+            }
+        }
+        stage('deploy on k8s cluster') {
+            steps {
+                script {
+                    //https://plugins.jenkins.io/kubernetes-cli/
+                    withKubeConfig([credentialsId: 'k8s-credentials', serverUrl: 'https://250DBC7854234J2H3G42J3H4.gr7.eu-west-3.eks.amazonaws.com']) {
+                        //get dockerhub private repo creds from Jenkins
+                        withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                            // create k8s secret of type'docker-resistry' to use in deployment's 'spec:imagePullSecrets'
+                            // so the deployment can pull images from the private repo 
+                            sh "kubectl create secret docker-registry docker-registry-secret --docker-server=docker.io --docker-username=$USER --docker-password=$PASS"
+                        }
+                        // envsubst replaces the env vars of `deployment.yaml' with actual values 
+                        // the result is piped to be read from `kubectl apply -f` (dash syntax in the end)
+                        sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
                     }
                 }
             }
         }
         // we commit the updated pom.xml file to the remote repo
-        // github has jenkins public key
+        // gitlab has jenkins public key
         stage('commit pom modification'){
             steps{
                 script{
@@ -82,53 +97,26 @@ pipeline{
                     sh 'git remote set-url origin git@github.com:miltozz/jenkins-java-demo.git'
                     sh 'git add .'
                     sh 'git commit -m "Jenkins ci : version bump on pom.xml"'
-                    sh 'git push origin HEAD:auto-versioning'
-                }
-            }
-        }
-
-        stage ('deploy on ec2'){
-            environment{
-                DOCKER_CREDS = credentials('dockerhub-private-repo')
-            }
-            steps{
-                script{
-                    def ec2Instance = "${EC2_USER}@${EC2_PUBLIC_IP}"
-                    def dockerLogin = "bash ./docker_creds.sh ${DOCKER_CREDS_USR} ${DOCKER_CREDS_PSW}"
-                    def dockerCmd = "docker run -dp 3000:8080 miltosdev/my-private-repo:${IMAGE_NAME}"
-                                  
-                    sshagent(['paris-test-key']) {
-                        //sh "ssh -o StrictHostKeyChecking=no ec2-user@11.111.11.111 ${dockerCmd}"
-                        sh "scp -o StrictHostKeyChecking=no docker_creds.sh ${ec2Instance}:/home/${EC2_USER}"
-                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${dockerLogin}"
-                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} docker ps"
-                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${dockerCmd}"
-                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} docker ps"                       
-                    }
+                    sh 'git push origin HEAD:jenkins/k8s'
                 }
             }
         }
     }
 }
-
-
-
-
-
-        
+    
     //   stage('commit with username and pass') {
     //         steps {
     //             script {
-    //                 withCredentials([usernamePassword(credentialsId: 'gitlab-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+    //                 withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
     //                     // git config here for the first time run
     //                     sh 'git config --global user.email "jenkins@example.com"'
     //                     sh 'git config --global user.name "jenkins"'
     
     //                     //or SSH into the jenkins server and set the git configuration
-    //                     sh "git remote set-url origin https://${USER}:${PASS}@gitlab.com/miltozz/jenkins-java-demo.git"
+    //                     sh "git remote set-url origin https://${USER}:${PASS}@github.com/miltozz/jenkins-java-demo.git"
     //                     sh 'git add .'
     //                     sh 'git commit -m "ci: version bump"'
-    //                     sh 'git push origin HEAD:auto-versioning'
+    //                     sh 'git push origin HEAD:jenkins/k8s'
     //                 }
     //             }
     //         }
