@@ -14,9 +14,9 @@ pipeline{
         maven 'maven386'
     }
 
-    environment{
-        //IMAGE_NAME = "5.0.11-build-19"
-    }
+    // environment{
+    //     IMAGE_NAME = "5.0.11-build-19"
+    // }
 
     stages{
         stage ("init"){
