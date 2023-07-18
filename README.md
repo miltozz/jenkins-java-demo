@@ -5,21 +5,39 @@
 - [Github Docs: Webhooks ](https://docs.github.com/en/webhooks-and-events/webhooks/about-webhooks-for-repositories)
 
 
+## Jenkins - System - GitHub Server
 
+### Plugin help notes
+In this mode, Jenkins will add/remove hook URLs to GitHub based on the project configuration. Jenkins has a single post-commit hook URL for all the repositories, and this URL will be added to all the GitHub repositories Jenkins is interested in. You should provide credentials with scope admin:repo_hook for every repository which should be managed by Jenkins. It needs to read the current list of hooks, create new hooks and remove old hooks.
 
+The Hook URL is http://13.38.217.197:8080/github-webhook/ , and it needs to be accessible from the internet. If you have a firewall and such between GitHub and Jenkins, you can set up a reverse proxy and override the hook URL that Jenkins registers to GitHub, by checking "override hook URL" in the advanced configuration and specify to which URL GitHub should POST.
 
+### Steps
+1. Manage Jenkins - System - Github Server
+- API URL: `https://api.github.com`
+- Credentials: 
+    - Create personal access token in your account GitHub settings. Token should be registered with scopes:
+        - admin:repo_hook - for managing hooks (read, write and delete old ones)
+        - repo - to see private repos
+        - repo:status - to manipulate commit statuses
 
+    - In Jenkins, create credentials as «Secret Text», provided by Plain Credentials Plugin.
+    - WARNING! Credentials are filtered on changing custom GitHub URL.
 
+2. In pipeline settings(tested for simple pipeline, not multibranch)
+- Check `GitHub project` and project url: `https://github.com/miltozz/jenkins-java-demo/`
+- Check `GitHub hook trigger for GITScm polling`
+- ..rest of pipeline settings...
 
+3. Repository - Settings - Webhooks
+- Payload URL: `http://[JENKINS-IP:PORT]/github-webhook/`
+- Type: `application/json`
+- Choose trigger events (default _push_)
 
+4. Open firewall protocol and ports for Github hooks
+- `https://api.github.com/meta`
 
-
-
-
-
-
-
-
+---
 
 # Gitlab
 
