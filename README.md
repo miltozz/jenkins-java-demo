@@ -39,7 +39,7 @@ The Hook URL is http://13.38.217.197:8080/github-webhook/ , and it needs to be a
 
 ---
 
-# Gitlab 
+# Gitlab
 - On push to the repo a Jenkins pipeline is triggered
 - [Gitlab Jenkins Integration](https://docs.github.com/en/webhooks-and-events/webhooks/about-webhooks-for-repositories)
 
@@ -57,4 +57,3 @@ The Hook URL is http://13.38.217.197:8080/github-webhook/ , and it needs to be a
     - Example URL for multibranch: `my-multibranch-pipeline/job/webhook-integration-simple-test/`
         - freestyle or pipeline is recommended, not multibranch
 - Jenkins SG inbound: [GitLab.com](https://docs.gitlab.com/ee/user/gitlab_com/#ip-range) uses the IP ranges `34.74.90.64/28` and `34.74.226.0/24` for traffic from its Web/API fleet.
-- Integration is Disabled
