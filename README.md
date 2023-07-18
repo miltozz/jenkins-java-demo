@@ -1,4 +1,13 @@
-# deploy-on-k8s
+# Testing java demo app, auto-versioning(pom.xml) with different ways of deployment 
 
-- Deploy a simple nginx deployment on an k8s cluster. 
-- Cluster config and kubectl are available on Jenkins container
+## Jenkins pipeline
+Full project name: jenkins-java-demo/av-dock-compose
+
+## Info
+- Using ssh-agent, scp and ssh
+- Using docker run
+- Using docker - compose
+
+## Notes
+Check Jenkinsfile for extra comments and notes
+
