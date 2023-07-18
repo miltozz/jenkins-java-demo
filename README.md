@@ -1,4 +1,4 @@
-# Simple Java app for tests
+# deploy-on-k8s
 
-- Simple java app to use for tests and test maven
-- Build jar with `maven clean package`
+- Deploy a simple nginx deployment on an k8s cluster. 
+- Cluster config and kubectl are available on Jenkins container
