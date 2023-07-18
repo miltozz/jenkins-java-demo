@@ -14,7 +14,7 @@ pipeline{
         stage ("test"){
             steps{
                 script{
-                    echo "testing...."
+                    echo "testing.."
                     //MULTIBRANCH ONLY
                     //echo "Testing branch $BRANCH_NAME"
                     echo "testing automatic trigger/webhooks/integrations"
@@ -29,7 +29,7 @@ pipeline{
             // }            
             steps{
                 script{
-                    echo "building..."
+                    echo "building.."
                     //gv.buildApp()
                 }
                 
