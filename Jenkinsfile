@@ -39,7 +39,7 @@ pipeline{
             //     expression{
             //         BRANCH_NAME == 'main'
             //     }
-            // }            
+            // }             
             steps{
                 echo "deploying..."
             }
