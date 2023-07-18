@@ -15,6 +15,7 @@ pipeline{
             steps{
                 script{
                     echo "testing...."
+                    //MULTIBRANCH ONLY
                     //echo "Testing branch $BRANCH_NAME"
                     echo "testing automatic trigger/webhooks/integrations"
                 }
