@@ -1,4 +1,6 @@
-# Jenkins pipeline to deploy java demo app on k8s cluster
+# WIP
+
+<!-- # Jenkins pipeline to deploy java demo app on k8s cluster
 Branch: jenkins/k8s
 
 ## Info
@@ -15,4 +17,4 @@ Branch: jenkins/k8s
 
 ## Pre 
 - Jenknins needs kubectl installed to run commands on the k8s cluster
-- Jenkins needs Github access (ssh key) - Check Jenkins container /var/jenkins_home/.ssh
+- Jenkins needs Github access (ssh key) - Check Jenkins container /var/jenkins_home/.ssh -->

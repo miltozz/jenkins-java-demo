@@ -1,36 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: java-demo-app
+  name: $APP_NAME
   labels:
-    app: java-demo-app
+    app: $APP_NAME
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: java-demo-app
+      app: $APP_NAME
   template:
     metadata:
       labels:
-        app: java-demo-app
+        app: $APP_NAME
     spec:
       imagePullSecrets:
-        - name: docker-registry-secret
+        - name: aws-registry-key
       containers:
-        - name: java-demo-app
-          image: miltosdev/my-private-repo:$IMAGE_NAME
+        - name: $APP_NAME
+          image: $DOCKER_REPO:$IMAGE_NAME
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: java-demo-app
-spec:
-  selector:
-    app: java-demo-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080

@@ -1,123 +1,105 @@
-//in Dockerfile jar matching with wild card *
-//another way is to pass the version number as a parameter and add it to jar name
+#!/usr/bin/env groovy
 
-//we should build the jar with mvn clean package, so the older jars are deleted.
-//Dockerfile needs this because it builds the image with a * wildcard in the jar name. 
-
-def gv
-def DOCKER_REPO = 'miltosdev/my-private-repo'
-
-pipeline{
+pipeline {
     agent any
-    tools{
-        maven 'maven386'
+    tools {
+        maven 'Maven'
     }
-
-    stages{
-        stage ("init"){
-            steps{
-                script{
-                    echo "Init...."
-                    gv = load "script.groovy"
+    environment {
+        AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+    }
+    stages {
+        stage('provision cluster') {
+            environment {
+                TF_VAR_env_prefix = "test"
+                TF_VAR_k8s_version = "1.23"
+            }
+            steps {
+                script {
+                    dir('terraform') {
+                        echo "creating ECR repository and EKS cluster"
+                        sh "terraform init"
+                        sh "terraform apply --auto-approve"
+                        env.DOCKER_REPO_URL = sh(
+                            script: "terraform output repo_url",
+                            returnStdout: true
+                        ).trim()
+                        env.K8S_CLUSTER_URL = sh(
+                            script: "terraform output cluster_url",
+                            returnStdout: true
+                        ).trim()
+                        env.REPO_USER = sh(
+                            script: "terraform output ecr_user_name",
+                            returnStdout: true
+                        ).trim()
+                        env.REPO_PWD = sh(
+                            script: "terraform output ecr_user_password",
+                            returnStdout: true
+                        ).trim()
+                    }
+                    env.KUBECONFIG="terraform/kubeconfig.yaml"
+                    sh "kubectl get node"
                 }
             }
         }
-        stage ("test"){
-            steps{
-                script{
-                    echo "testing...."
-                    echo "Testing branch $BRANCH_NAME"
-                }
-            }
-        }
-        stage('incr. version') {
+        stage('increment version') {
             steps {
                 script {
                     echo 'incrementing app version...'
-                    //increments app version on the pom.xml file
                     sh 'mvn build-helper:parse-version versions:set \
                         -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
                         versions:commit'
-                    def versionMatcher = readFile('pom.xml') =~ '<version>(.+)</version>' //returns array
-
-                    // get first array element e.g. <version>2.0.3</version>
-                    // then get second child from child array e.g. 2.0.3
-                    def version = versionMatcher[0][1]
-                    env.IMAGE_NAME = "$version-build-$BUILD_NUMBER" //2.0.3-4, version-pipeline build number
+                    def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+                    def version = matcher[0][1]
+                    env.IMAGE_NAME = "$version-$BUILD_NUMBER"
                 }
             }
         }
-        stage("buildApp"){           
-            steps{
-                script{
-                    echo "building jar..."
-                    //pom.xml is updated so we build the jar with updated version
-                    gv.buildApp()
-                }         
-            }
-        }        
-        stage ('build image & push to dockerhub'){
-            steps{
-                script{
-                    echo "building the docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "docker build -t ${DOCKER_REPO}:${IMAGE_NAME} ."
-                        sh "echo $PASS | docker login -u $USER --password-stdin"
-                        sh "docker push ${DOCKER_REPO}:${IMAGE_NAME}"
-                    }
-                }
+        stage('build app') {
+            steps {
+               script {
+                   echo "building the application..."
+                   sh 'mvn clean package'
+               }
             }
         }
-        stage('deploy on k8s cluster') {
+        stage('build image') {
             steps {
                 script {
-                    //https://plugins.jenkins.io/kubernetes-cli/
-                    withKubeConfig([credentialsId: 'k8s-credentials', serverUrl: 'https://250DBC7854234J2H3G42J3H4.gr7.eu-west-3.eks.amazonaws.com']) {
-                        //get dockerhub private repo creds from Jenkins
-                        withCredentials([usernamePassword(credentialsId: 'dockerhub-private-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                            // create k8s secret of type'docker-resistry' to use in deployment's 'spec:imagePullSecrets'
-                            // so the deployment can pull images from the private repo 
-                            sh "kubectl create secret docker-registry docker-registry-secret --docker-server=docker.io --docker-username=$USER --docker-password=$PASS"
-                        }
-                        // envsubst replaces the env vars of `deployment.yaml' with actual values 
-                        // the result is piped to be read from `kubectl apply -f` (dash syntax in the end)
-                        sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
-                    }
+                    echo "building the docker image..."
+                    sh "docker build -t ${DOCKER_REPO_URL}:${IMAGE_NAME} ."
+                    sh "echo ${REPO_PWD} | docker login -u ${REPO_USER} --password-stdin ${DOCKER_REPO_URL}"
+                    sh "docker push ${DOCKER_REPO_URL}:${IMAGE_NAME}"
                 }
             }
         }
-        // we commit the updated pom.xml file to the remote repo
-        // gitlab has jenkins public key
-        stage('commit pom modification'){
-            steps{
-                script{
-                    sh 'git status'
-                    sh 'git branch'
-                    sh 'git config --list'
-                    sh 'git remote set-url origin git@github.com:miltozz/jenkins-java-demo.git'
-                    sh 'git add .'
-                    sh 'git commit -m "Jenkins ci : version bump on pom.xml"'
-                    sh 'git push origin HEAD:jenkins/k8s'
+        stage('deploy') {
+            environment {
+                APP_NAME = 'java-maven-app'
+            }
+            steps {
+                script {
+                    echo 'deploying docker image...'
+                    sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
+                    sh 'envsubst < kubernetes/service.yaml | kubectl apply -f -'
+                }
+            }
+        }
+        stage('commit version update') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        sh 'git config user.email "jenkins@example.com"'
+                        sh 'git config user.name "Jenkins"'
+                        sh "git remote set-url origin https://${USER}:${PASS}@gitlab.com/miltozz/java-maven-app.git"
+                        sh 'git add .'
+                        sh 'git commit -m "ci: version bump"'
+                        //${BRANCH_NAME} works in multibranch pipelines
+                        sh "git push origin HEAD:${BRANCH_NAME}"
+                    }
                 }
             }
         }
     }
 }
-    
-    //   stage('commit with username and pass') {
-    //         steps {
-    //             script {
-    //                 withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-    //                     // git config here for the first time run
-    //                     sh 'git config --global user.email "jenkins@example.com"'
-    //                     sh 'git config --global user.name "jenkins"'
-    
-    //                     //or SSH into the jenkins server and set the git configuration
-    //                     sh "git remote set-url origin https://${USER}:${PASS}@github.com/miltozz/jenkins-java-demo.git"
-    //                     sh 'git add .'
-    //                     sh 'git commit -m "ci: version bump"'
-    //                     sh 'git push origin HEAD:jenkins/k8s'
-    //                 }
-    //             }
-    //         }
-    //     }

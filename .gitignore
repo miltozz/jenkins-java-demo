@@ -1,2 +1,5 @@
+.vscode/*
 target
-.vscode/
+terraform/.terraform/*
+terraform/terraform.tfstate*
+terraform/kubeconfig*
