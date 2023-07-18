@@ -15,7 +15,7 @@ def buildImage() {
 */
 
 def deployApp() {
-    echo 'deploying the applicationS'
+    echo 'deploying the application'
 } 
 
 return this
