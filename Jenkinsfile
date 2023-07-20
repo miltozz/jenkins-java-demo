@@ -3,22 +3,23 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven'
+        maven 'maven386'
     }
     environment {
         AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
     }
     stages {
-        stage('provision cluster') {
+        stage('tform provision cluster') {
             environment {
-                TF_VAR_env_prefix = "test"
-                TF_VAR_k8s_version = "1.23"
+                TF_VAR_depl_env_prefix = "test"
+                TF_VAR_k8s_version = "1.26.6"
             }
             steps {
                 script {
                     dir('terraform') {
-                        echo "creating ECR repository and EKS cluster"
+                        echo "terraform - creating ECR repo..."
+                        echo "terraform - creating EKS cluster..."
                         sh "terraform init"
                         sh "terraform apply --auto-approve"
                         env.DOCKER_REPO_URL = sh(

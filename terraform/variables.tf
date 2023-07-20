@@ -1,4 +1,4 @@
-variable env_prefix {
+variable depl_env_prefix {
   default = "dev"
 }
 
@@ -19,7 +19,7 @@ variable public_subnet_cidr_blocks {
 }
 
 variable k8s_version {
-  default = "1.21"
+  default = "1.26"
 }
 
 variable cluster_name {

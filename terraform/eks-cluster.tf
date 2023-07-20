@@ -23,7 +23,8 @@ data "aws_eks_cluster_auth" "myapp-cluster" {
 
 module "eks" {
     source = "terraform-aws-modules/eks/aws"
-    version = "14"
+    # version = "14"
+    version = "19.15.3"
     
     cluster_name = var.cluster_name
     cluster_version = var.k8s_version
@@ -32,7 +33,7 @@ module "eks" {
     vpc_id = module.myapp-vpc.vpc_id
 
     tags = {
-        environment = var.env_prefix
+        environment = var.depl_env_prefix
         application = "myapp"
     }
     
