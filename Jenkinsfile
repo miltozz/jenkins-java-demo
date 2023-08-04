@@ -44,7 +44,7 @@ def varName = System.getenv("BUILD_NUMBER") ? : "0"
 //SPECIFY IMAGE NAME as global var
 def dockerRepoImageName = 'miltosdev/my-private-repo:jda-v1.0.0'
 def nexusRepoImageName = '111.11.111.111:8083/nx-java-demo-app:1.5.0-nx'
-def jenkinsIp = '11.111.198.202/32'
+def jenkinsIp = '13.36.39.83/32'
 
 
 pipeline{
